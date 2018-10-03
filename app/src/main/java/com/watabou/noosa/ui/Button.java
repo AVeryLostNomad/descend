@@ -17,6 +17,8 @@
 
 package com.watabou.noosa.ui;
 
+import android.util.Log;
+
 import com.watabou.input.Touchscreen.Touch;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.TouchArea;
@@ -92,5 +94,6 @@ public class Button extends Component {
 		hotArea.y = y;
 		hotArea.width = width;
 		hotArea.height = height;
+		Log.e("Toucharea", "New measurements: " + x + " and " + y + " and " + width + " and " + height);
 	}
 }

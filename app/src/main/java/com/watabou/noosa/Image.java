@@ -20,6 +20,7 @@ package com.watabou.noosa;
 import java.nio.FloatBuffer;
 
 import android.graphics.RectF;
+import android.util.Log;
 
 import com.watabou.gltextures.TextureCache;
 import com.watabou.gltextures.SmartTexture;
