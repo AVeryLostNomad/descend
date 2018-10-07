@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import com.averylostnomad.sheep.TestMain;
 import com.watabou.noosa.Scene;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.pixeldungeon.Assets;
@@ -70,7 +71,6 @@ import com.watabou.pixeldungeon.utils.GLog;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
-import com.watabou.utils.SparseArray;
 
 public abstract class Level implements Bundlable {
 	
@@ -121,9 +121,9 @@ public abstract class Level implements Bundlable {
 	public int exit;
 	
 	public HashSet<Mob> mobs;
-	public SparseArray<Heap> heaps;
+	public HashMap<Integer,Heap> heaps;
 	public HashMap<Class<? extends Blob>,Blob> blobs;
-	public SparseArray<Plant> plants;
+	public HashMap<Integer,Plant> plants;
 	
 	protected ArrayList<Item> itemsToSpawn = new ArrayList<Item>();
 	
@@ -154,9 +154,9 @@ public abstract class Level implements Bundlable {
 		Arrays.fill( mapped, false );
 		
 		mobs = new HashSet<Mob>();
-		heaps = new SparseArray<Heap>();
+		heaps = new HashMap<Integer,Heap>();
 		blobs = new HashMap<Class<? extends Blob>,Blob>();
-		plants = new SparseArray<Plant>();
+		plants = new HashMap<Integer,Plant>();
 		
 		if (!Dungeon.bossLevel()) {
 			addItemToSpawn( Generator.random( Generator.Category.FOOD ) );
@@ -205,7 +205,7 @@ public abstract class Level implements Bundlable {
 		cleanWalls();
 		
 		createMobs();
-		createItems();
+		if(!TestMain.ADMIN_MODE)createItems();
 	}
 	
 	public void reset() {	
@@ -222,9 +222,9 @@ public abstract class Level implements Bundlable {
 	public void restoreFromBundle( Bundle bundle ) {
 		
 		mobs = new HashSet<Mob>();
-		heaps = new SparseArray<Heap>();
+		heaps = new HashMap<Integer,Heap>();
 		blobs = new HashMap<Class<? extends Blob>, Blob>();
-		plants = new SparseArray<Plant>();
+		plants = new HashMap<Integer,Plant>();
 		
 		map		= bundle.getIntArray( MAP );
 		visited	= bundle.getBooleanArray( VISITED );
@@ -612,7 +612,7 @@ public abstract class Level implements Bundlable {
 	}
 	
 	public void uproot( int pos ) {
-		plants.delete( pos );
+		plants.remove( pos );
 	}
 	
 	public int pitCell() {

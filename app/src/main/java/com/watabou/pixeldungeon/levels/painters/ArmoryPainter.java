@@ -17,6 +17,9 @@
  */
 package com.watabou.pixeldungeon.levels.painters;
 
+import android.util.Log;
+
+import com.averylostnomad.sheep.TestMain;
 import com.watabou.pixeldungeon.items.Bomb;
 import com.watabou.pixeldungeon.items.Generator;
 import com.watabou.pixeldungeon.items.Item;
@@ -55,7 +58,9 @@ public class ArmoryPainter extends Painter {
 			do {
 				pos = room.random();
 			} while (level.map[pos] != Terrain.EMPTY || level.heaps.get( pos ) != null);
-			level.drop( prize( level ), pos );
+			if(!TestMain.ADMIN_MODE){
+				level.drop( prize( level ), pos );
+			}
 		}
 		
 		entrance.set( Room.Door.Type.LOCKED );

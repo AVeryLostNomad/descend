@@ -44,7 +44,7 @@ public class HeroSprite extends CharSprite {
 	
 	public HeroSprite() {
 		super();
-		
+		System.out.println("Calling here!");
 		link( Dungeon.hero );
 		
 		texture( Dungeon.hero.heroClass.spritesheet() );

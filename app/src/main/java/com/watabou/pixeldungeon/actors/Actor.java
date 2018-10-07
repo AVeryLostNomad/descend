@@ -18,6 +18,7 @@
 package com.watabou.pixeldungeon.actors;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import android.util.SparseArray;
@@ -98,7 +99,7 @@ public abstract class Actor implements Bundlable {
 	private static HashSet<Actor> all = new HashSet<Actor>();
 	private static Actor current;
 	
-	private static SparseArray<Actor> ids = new SparseArray<Actor>();
+	private static HashMap<Integer, Actor> ids = new HashMap<Integer, Actor>();
 	
 	private static float now = 0;
 	
@@ -188,7 +189,6 @@ public abstract class Actor implements Bundlable {
 			}
 
 			if (current != null) {
-				
 				if (current instanceof Char && ((Char)current).sprite.isMoving) {
 					// If it's character's turn to act, but its sprite 
 					// is moving, wait till the movement is over

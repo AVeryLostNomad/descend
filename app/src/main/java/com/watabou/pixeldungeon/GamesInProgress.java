@@ -19,25 +19,28 @@ package com.watabou.pixeldungeon;
 
 import java.util.HashMap;
 
+import com.watabou.pixeldungeon.actors.hero.Hero;
 import com.watabou.pixeldungeon.actors.hero.HeroClass;
+import com.watabou.pixeldungeon.newscenes.NewStartScene;
+import com.watabou.pixeldungeon.utils.Utils;
 import com.watabou.utils.Bundle;
 
 public class GamesInProgress {
 
-	private static HashMap<HeroClass, Info> state = new HashMap<HeroClass, Info>();
+	private static HashMap<Integer, Info> state = new HashMap<Integer, Info>();
 	
-	public static Info check( HeroClass cl ) {
+	public static Info check() {
 		
-		if (state.containsKey( cl )) {
+		if (state.containsKey(NewStartScene.Companion.getSaveIndex())) {
 			
-			return state.get( cl );
+			return state.get( NewStartScene.Companion.getSaveIndex() );
 			
 		} else {
 			
 			Info info;
 			try {
 				
-				Bundle bundle = Dungeon.gameBundle( Dungeon.gameFile( cl ) );
+				Bundle bundle = Dungeon.gameBundle(Dungeon.getGamefile());
 				info = new Info();
 				Dungeon.preview( info, bundle );
 
@@ -45,31 +48,32 @@ public class GamesInProgress {
 				info = null;
 			}
 			
-			state.put( cl, info );
+			state.put( NewStartScene.Companion.getSaveIndex(), info );
 			return info;
 			
 		}
 	}
 	
-	public static void set( HeroClass cl, int depth, int level, boolean challenges ) {
+	public static void set(int depth, int level, boolean challenges ) {
 		Info info = new Info();
 		info.depth = depth;
 		info.level = level;
 		info.challenges = challenges;
-		state.put( cl, info );
+		state.put( NewStartScene.Companion.getSaveIndex(), info );
 	}
 	
-	public static void setUnknown( HeroClass cl ) {
-		state.remove( cl );
+	public static void setUnknown() {
+		state.remove( NewStartScene.Companion.getSaveIndex() );
 	}
 	
-	public static void delete( HeroClass cl ) {
-		state.put( cl, null );
+	public static void delete() {
+		state.put( NewStartScene.Companion.getSaveIndex(), null );
 	}
 	
 	public static class Info {
 		public int depth;
 		public int level;
+		public HeroClass heroClass;
 		public boolean challenges;
 	}
 }

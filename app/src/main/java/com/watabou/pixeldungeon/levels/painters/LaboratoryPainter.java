@@ -17,6 +17,7 @@
  */
 package com.watabou.pixeldungeon.levels.painters;
 
+import com.averylostnomad.sheep.TestMain;
 import com.watabou.pixeldungeon.actors.blobs.Alchemy;
 import com.watabou.pixeldungeon.items.Generator;
 import com.watabou.pixeldungeon.items.Item;
@@ -61,7 +62,7 @@ public class LaboratoryPainter extends Painter {
 			} while (
 				level.map[pos] != Terrain.EMPTY_SP || 
 				level.heaps.get( pos ) != null);
-			level.drop( prize( level ), pos );
+			if( !TestMain.ADMIN_MODE)level.drop( prize( level ), pos );
 		}
 		
 		entrance.set( Room.Door.Type.LOCKED );

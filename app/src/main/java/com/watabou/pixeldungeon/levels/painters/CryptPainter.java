@@ -17,6 +17,7 @@
  */
 package com.watabou.pixeldungeon.levels.painters;
 
+import com.averylostnomad.sheep.TestMain;
 import com.watabou.pixeldungeon.items.Generator;
 import com.watabou.pixeldungeon.items.Item;
 import com.watabou.pixeldungeon.items.Heap.Type;
@@ -60,7 +61,7 @@ public class CryptPainter extends Painter {
 			cy = room.top + 2;
 		}
 		
-		level.drop( prize( level ), cx + cy * Level.WIDTH ).type = Type.TOMB;
+		if(!TestMain.ADMIN_MODE) level.drop( prize( level ), cx + cy * Level.WIDTH ).type = Type.TOMB;
 	}
 	
 	private static Item prize( Level level ) {

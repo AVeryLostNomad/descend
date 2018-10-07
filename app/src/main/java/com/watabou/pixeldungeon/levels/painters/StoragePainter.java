@@ -17,6 +17,7 @@
  */
 package com.watabou.pixeldungeon.levels.painters;
 
+import com.averylostnomad.sheep.TestMain;
 import com.watabou.pixeldungeon.items.Generator;
 import com.watabou.pixeldungeon.items.Item;
 import com.watabou.pixeldungeon.items.potions.PotionOfLiquidFlame;
@@ -24,6 +25,8 @@ import com.watabou.pixeldungeon.levels.Level;
 import com.watabou.pixeldungeon.levels.Room;
 import com.watabou.pixeldungeon.levels.Terrain;
 import com.watabou.utils.Random;
+
+import junit.framework.Test;
 
 public class StoragePainter extends Painter {
 
@@ -40,7 +43,7 @@ public class StoragePainter extends Painter {
 			do {
 				pos = room.random();
 			} while (level.map[pos] != floor);
-			level.drop( prize( level ), pos );
+			if(!TestMain.ADMIN_MODE)level.drop( prize( level ), pos );
 		}
 		
 		room.entrance().set( Room.Door.Type.BARRICADE );

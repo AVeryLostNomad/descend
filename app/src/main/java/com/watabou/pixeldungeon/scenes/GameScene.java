@@ -17,8 +17,11 @@
  */
 package com.watabou.pixeldungeon.scenes;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
@@ -148,16 +151,19 @@ public class GameScene extends PixelScene {
 		
 		int size = Dungeon.level.plants.size();
 		for (int i=0; i < size; i++) {
-			addPlantSprite( Dungeon.level.plants.valueAt( i ) );
+			addPlantSprite( Dungeon.level.plants.get( i ) );
 		}
 		
 		heaps = new Group();
 		add( heaps );
 		
 		size = Dungeon.level.heaps.size();
-		for (int i=0; i < size; i++) {
-			addHeapSprite( Dungeon.level.heaps.valueAt( i ) );
+		for(Map.Entry<Integer, Heap> e : Dungeon.level.heaps.entrySet()){
+			addHeapSprite(e.getValue());
 		}
+//		for (int i=0; i < size; i++) {
+//			addHeapSprite( Dungeon.level.heaps.get( i ) );
+//		}
 
 		emitters = new Group();
 		effects = new Group();
@@ -197,7 +203,7 @@ public class GameScene extends PixelScene {
 		add( statuses );
 		
 		add( emoicons );
-		
+
 		hero = new HeroSprite();
 		hero.place( Dungeon.hero.pos );
 		hero.updateArmor();
@@ -411,6 +417,9 @@ public class GameScene extends PixelScene {
 	
 	private void addMobSprite( Mob mob ) {
 		CharSprite sprite = mob.sprite();
+		if(sprite == null){
+			System.out.println(mob.name);
+		}
 		sprite.visible = Dungeon.visible[mob.pos];
 		mobs.add( sprite );
 		sprite.link( mob );

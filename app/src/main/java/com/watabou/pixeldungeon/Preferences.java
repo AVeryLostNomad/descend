@@ -17,6 +17,7 @@
  */
 package com.watabou.pixeldungeon;
 
+import com.averylostnomad.sheep.TestMain;
 import com.watabou.noosa.Game;
 
 import android.content.SharedPreferences;
@@ -41,6 +42,7 @@ enum Preferences {
 	private SharedPreferences prefs;
 	
 	private SharedPreferences get() {
+		if(TestMain.ADMIN_MODE) return null;
 		if (prefs == null) {
 			prefs = Game.instance.getPreferences( Game.MODE_PRIVATE );
 		}
@@ -48,6 +50,7 @@ enum Preferences {
 	}
 	
 	int getInt( String key, int defValue  ) {
+		if(get() == null) return defValue; // To support local admin-only mode
 		return get().getInt( key, defValue );
 	}
 	

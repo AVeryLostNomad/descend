@@ -228,6 +228,7 @@ public class Hero extends Char {
 	
 	public static void preview( GamesInProgress.Info info, Bundle bundle ) {
 		info.level = bundle.getInt( LEVEL );
+		info.heroClass = HeroClass.restoreInBundle(bundle);
 	}
 	
 	public String className() {
@@ -739,7 +740,7 @@ public class Hero extends Char {
 					ready();
 				} else {
 					Dungeon.win( ResultDescriptions.WIN );
-					Dungeon.deleteGame( Dungeon.hero.heroClass, true );
+					Dungeon.deleteGame(true );
 					Game.switchScene( SurfaceScene.class );
 				}
 				
@@ -1158,7 +1159,7 @@ public class Hero extends Char {
 			
 		} else {
 			
-			Dungeon.deleteGame( Dungeon.hero.heroClass, false );
+			Dungeon.deleteGame(false );
 			GameScene.show( new WndResurrect( ankh, cause ) );
 			
 		}
@@ -1219,7 +1220,7 @@ public class Hero extends Char {
 			((Hero.Doom)cause).onDeath();
 		}
 		
-		Dungeon.deleteGame( Dungeon.hero.heroClass, true );
+		Dungeon.deleteGame( true );
 	}
 	
 	@Override
