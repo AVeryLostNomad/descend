@@ -19,6 +19,8 @@ package com.watabou.pixeldungeon.actors;
 
 import java.util.HashSet;
 
+import com.averylostnomad.sheep.HeadlessBundlable;
+import com.averylostnomad.sheep.HeadlessBundle;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.pixeldungeon.Assets;
@@ -123,6 +125,33 @@ public abstract class Char extends Actor {
 		HT = bundle.getInt( TAG_HT );
 		
 		for (Bundlable b : bundle.getCollection( BUFFS )) {
+			if (b != null) {
+				((Buff)b).attachTo( this );
+			}
+		}
+	}
+
+	@Override
+	public void storeInBundle( HeadlessBundle bundle ) {
+
+		super.storeInBundle( bundle );
+
+		bundle.put( POS, pos );
+		bundle.put( TAG_HP, HP );
+		bundle.put( TAG_HT, HT );
+		bundle.put( BUFFS, buffs );
+	}
+
+	@Override
+	public void restoreFromBundle( HeadlessBundle bundle ) {
+
+		super.restoreFromBundle( bundle );
+
+		pos = bundle.getInt( POS );
+		HP = bundle.getInt( TAG_HP );
+		HT = bundle.getInt( TAG_HT );
+
+		for (HeadlessBundlable b : bundle.getCollection( BUFFS )) {
 			if (b != null) {
 				((Buff)b).attachTo( this );
 			}

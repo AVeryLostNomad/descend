@@ -151,7 +151,8 @@ public class Dungeon {
 		return (challenges & mask) != 0;
 	}
 
-	public static Level newLevelAdmin(Class<? extends Level> basics){
+	public static Level newLevelAdmin(Class<? extends Level> basics, int depth){
+		Dungeon.depth = depth;
 		try {
 			Level lvl = basics.newInstance();
 			lvl.create();
@@ -160,7 +161,10 @@ public class Dungeon {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
-		}
+		} catch(Exception e){
+		    // We had a bad level. The painter didn't work, etc...
+            return newLevelAdmin(basics, depth);
+        }
 		return null;
 	}
 	
@@ -559,6 +563,7 @@ public class Dungeon {
 	}
 	
 	public static void preview( GamesInProgress.Info info, Bundle bundle ) {
+	    Log.e("Haha", "Is bundle null? " + (bundle == null));
 		info.depth = bundle.getInt( DEPTH );
 		info.challenges = (bundle.getInt( CHALLENGES ) != 0);
 		if (info.depth == -1) {

@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import com.averylostnomad.sheep.HeadlessBundlable;
+import com.averylostnomad.sheep.HeadlessBundle;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.pixeldungeon.Assets;
 import com.watabou.pixeldungeon.Badges;
@@ -51,7 +53,7 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
 import com.watabou.utils.PointF;
 
-public class Item implements Bundlable {
+public class Item implements Bundlable, HeadlessBundlable {
 
 	private static final String TXT_PACK_FULL	= "Your pack is too full for the %s";
 	
@@ -537,6 +539,41 @@ public class Item implements Bundlable {
 			durability = bundle.getInt( DURABILITY );
 		}
 		
+		QuickSlot.restore( bundle, this );
+	}
+
+	@Override
+	public void storeInBundle( HeadlessBundle bundle ) {
+		bundle.put( QUANTITY, quantity );
+		bundle.put( LEVEL, level );
+		bundle.put( LEVEL_KNOWN, levelKnown );
+		bundle.put( CURSED, cursed );
+		bundle.put( CURSED_KNOWN, cursedKnown );
+		if (isUpgradable()) {
+			bundle.put( DURABILITY, durability );
+		}
+		QuickSlot.save( bundle, this );
+	}
+
+	@Override
+	public void restoreFromBundle( HeadlessBundle bundle ) {
+		quantity	= bundle.getInt( QUANTITY );
+		levelKnown	= bundle.getBoolean( LEVEL_KNOWN );
+		cursedKnown	= bundle.getBoolean( CURSED_KNOWN );
+
+		int level = bundle.getInt( LEVEL );
+		if (level > 0) {
+			upgrade( level );
+		} else if (level < 0) {
+			degrade( -level );
+		}
+
+		cursed	= bundle.getBoolean( CURSED );
+
+		if (isUpgradable()) {
+			durability = bundle.getInt( DURABILITY );
+		}
+
 		QuickSlot.restore( bundle, this );
 	}
 	

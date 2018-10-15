@@ -17,6 +17,7 @@
  */
 package com.watabou.pixeldungeon.levels;
 
+import com.averylostnomad.sheep.GeneratorSpec;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Scene;
 import com.watabou.noosa.particles.Emitter;
@@ -92,12 +93,23 @@ public class SewerLevel extends RegularLevel {
 				}
 			}
 		}
-		
-		while (true) {
-			int pos = roomEntrance.random();
-			if (pos != entrance) {
-				map[pos] = Terrain.SIGN;
-				break;
+
+		for(GeneratorSpec.SignInfo si : GeneratorSpec.signsToGenerate){
+			Room r = null;
+			for(Room checkRoom : rooms){
+				if(checkRoom.type == si.roomTypeToSpawnIn){
+					r = checkRoom;
+					break;
+				}
+			}
+
+			while(true){
+				int pos = r.random();
+				if(pos != Terrain.ENTRANCE && pos != Terrain.EXIT && pos != Terrain.SIGN){
+					map[pos] = Terrain.SIGN;
+					si.signPos = pos;
+					break;
+				}
 			}
 		}
 	}

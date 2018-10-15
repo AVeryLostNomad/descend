@@ -129,7 +129,11 @@ public class SewerBossLevel extends RegularLevel {
 			kingsRoom.type = Room.Type.RAT_KING;
 		}
 		
-		paint();
+		try{
+			paint();
+		}catch(Exception e){
+			return false;
+		}
 		
 		paintWater();
 		paintGrass();

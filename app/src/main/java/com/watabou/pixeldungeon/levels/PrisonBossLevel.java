@@ -148,7 +148,11 @@ public class PrisonBossLevel extends RegularLevel {
 			}
 		}
 		
-		paint();
+		try{
+			paint();
+		}catch(Exception e){
+			return false;
+		}
 
 		Room r = (Room)roomExit.connected.keySet().toArray()[0];
 		if (roomExit.connected.get( r ).y == roomExit.top) {

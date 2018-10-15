@@ -17,6 +17,9 @@
  */
 package com.watabou.pixeldungeon.ui;
 
+import android.util.Log;
+
+import com.averylostnomad.sheep.HeadlessBundle;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Button;
 import com.watabou.pixeldungeon.Dungeon;
@@ -260,7 +263,7 @@ public class QuickSlot extends Button implements WndBag.Listener {
 		
 		if (primaryValue instanceof Class && 
 			stuff.getItem( (Class<? extends Item>)primaryValue ) != null) {
-				
+
 			bundle.put( QUICKSLOT1, ((Class<?>)primaryValue).getName() );
 		}
 		if (QuickSlot.secondaryValue instanceof Class &&
@@ -279,6 +282,32 @@ public class QuickSlot extends Button implements WndBag.Listener {
 			bundle.put( QuickSlot.QUICKSLOT2, true );
 		}
 	}
+
+	@SuppressWarnings("unchecked")
+	public static void save( HeadlessBundle bundle ) {
+		Belongings stuff = Dungeon.hero.belongings;
+
+		if (primaryValue instanceof Class &&
+			stuff.getItem( (Class<? extends Item>)primaryValue ) != null) {
+
+			bundle.put( QUICKSLOT1, ((Class<?>)primaryValue).getName() );
+		}
+		if (QuickSlot.secondaryValue instanceof Class &&
+			stuff.getItem( (Class<? extends Item>)secondaryValue ) != null &&
+			Toolbar.secondQuickslot()) {
+
+			bundle.put( QUICKSLOT2, ((Class<?>)secondaryValue).getName() );
+		}
+	}
+
+	public static void save( HeadlessBundle bundle, Item item ) {
+		if (item == primaryValue) {
+			bundle.put( QuickSlot.QUICKSLOT1, true );
+		}
+		if (item == secondaryValue && Toolbar.secondQuickslot()) {
+			bundle.put( QuickSlot.QUICKSLOT2, true );
+		}
+	}
 	
 	public static void restore( Bundle bundle ) {
 		primaryValue = null;
@@ -290,7 +319,10 @@ public class QuickSlot extends Button implements WndBag.Listener {
 				primaryValue = Class.forName( qsClass );
 			} catch (ClassNotFoundException e) {
 			}
-		}
+		}else{
+		    // qsClass is null
+            primaryValue = "";
+        }
 		
 		qsClass = bundle.getString( QUICKSLOT2 );
 		if (qsClass != null) {
@@ -298,10 +330,49 @@ public class QuickSlot extends Button implements WndBag.Listener {
 				secondaryValue = Class.forName( qsClass );
 			} catch (ClassNotFoundException e) {
 			}
-		}
+		}else{
+            // qsClass is null
+            secondaryValue = "";
+        }
 	}
 	
 	public static void restore( Bundle bundle, Item item ) {
+		if (bundle.getBoolean( QUICKSLOT1 )) {
+			primaryValue = item;
+		}
+		if (bundle.getBoolean( QUICKSLOT2 )) {
+			secondaryValue = item;
+		}
+	}
+
+	public static void restore( HeadlessBundle bundle ) {
+		primaryValue = null;
+		secondaryValue = null;
+
+		String qsClass = bundle.getString( QUICKSLOT1 );
+		if (qsClass != null) {
+			try {
+				primaryValue = Class.forName( qsClass );
+			} catch (ClassNotFoundException e) {
+			}
+		}else{
+		    // qsClass is null
+            primaryValue = "";
+        }
+
+		qsClass = bundle.getString( QUICKSLOT2 );
+		if (qsClass != null) {
+			try {
+				secondaryValue = Class.forName( qsClass );
+			} catch (ClassNotFoundException e) {
+			}
+		}else{
+            // qsClass is null
+            secondaryValue = "";
+        }
+	}
+
+	public static void restore( HeadlessBundle bundle, Item item ) {
 		if (bundle.getBoolean( QUICKSLOT1 )) {
 			primaryValue = item;
 		}

@@ -19,6 +19,7 @@ package com.watabou.pixeldungeon.actors.mobs;
 
 import java.util.HashSet;
 
+import com.averylostnomad.sheep.HeadlessBundle;
 import com.watabou.pixeldungeon.Badges;
 import com.watabou.pixeldungeon.Challenges;
 import com.watabou.pixeldungeon.Dungeon;
@@ -51,6 +52,8 @@ public abstract class Mob extends Char {
 	protected static final String TXT_NOTICE1	= "?!";
 	protected static final String TXT_RAGE		= "#$%^";
 	protected static final String TXT_EXP		= "%+dEXP";
+
+	public Boolean IS_TAMED = false;
 	
 	public AiState SLEEPEING	= new Sleeping();
 	public AiState HUNTING		= new Hunting();
@@ -95,6 +98,7 @@ public abstract class Mob extends Char {
 		} else if (state == PASSIVE) {
 			bundle.put( STATE, Passive.TAG );
 		}
+		bundle.put("tamed", IS_TAMED);
 		bundle.put( TARGET, target );
 	}
 	
@@ -115,7 +119,48 @@ public abstract class Mob extends Char {
 		} else if (state.equals( Passive.TAG )) {
 			this.state = PASSIVE;
 		}
+		IS_TAMED = bundle.getBoolean("tamed");
+		target = bundle.getInt( TARGET );
+	}
 
+	@Override
+	public void storeInBundle( HeadlessBundle bundle ) {
+
+		super.storeInBundle( bundle );
+
+		if (state == SLEEPEING) {
+			bundle.put( STATE, Sleeping.TAG );
+		} else if (state == WANDERING) {
+			bundle.put( STATE, Wandering.TAG );
+		} else if (state == HUNTING) {
+			bundle.put( STATE, Hunting.TAG );
+		} else if (state == FLEEING) {
+			bundle.put( STATE, Fleeing.TAG );
+		} else if (state == PASSIVE) {
+			bundle.put( STATE, Passive.TAG );
+		}
+		bundle.put("tamed", IS_TAMED);
+		bundle.put( TARGET, target );
+	}
+
+	@Override
+	public void restoreFromBundle( HeadlessBundle bundle ) {
+
+		super.restoreFromBundle( bundle );
+
+		String state = bundle.getString( STATE );
+		if (state.equals( Sleeping.TAG )) {
+			this.state = SLEEPEING;
+		} else if (state.equals( Wandering.TAG )) {
+			this.state = WANDERING;
+		} else if (state.equals( Hunting.TAG )) {
+			this.state = HUNTING;
+		} else if (state.equals( Fleeing.TAG )) {
+			this.state = FLEEING;
+		} else if (state.equals( Passive.TAG )) {
+			this.state = PASSIVE;
+		}
+		IS_TAMED = bundle.getBoolean("tamed");
 		target = bundle.getInt( TARGET );
 	}
 	

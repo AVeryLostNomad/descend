@@ -20,6 +20,7 @@ package com.watabou.pixeldungeon.items.scrolls;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import com.averylostnomad.sheep.HeadlessBundle;
 import com.watabou.pixeldungeon.Badges;
 import com.watabou.pixeldungeon.actors.buffs.Blindness;
 import com.watabou.pixeldungeon.actors.hero.Hero;
@@ -85,9 +86,17 @@ public abstract class Scroll extends Item {
 	public static void save( Bundle bundle ) {
 		handler.save( bundle );
 	}
+	public static void save( HeadlessBundle bundle ) {
+		handler.save( bundle );
+	}
 	
 	@SuppressWarnings("unchecked")
 	public static void restore( Bundle bundle ) {
+		handler = new ItemStatusHandler<Scroll>( (Class<? extends Scroll>[])scrolls, runes, images, bundle );
+	}
+
+	@SuppressWarnings("unchecked")
+	public static void restore( HeadlessBundle bundle ) {
 		handler = new ItemStatusHandler<Scroll>( (Class<? extends Scroll>[])scrolls, runes, images, bundle );
 	}
 	

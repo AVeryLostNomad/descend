@@ -17,6 +17,7 @@
  */
 package com.watabou.pixeldungeon.actors.hero;
 
+import com.averylostnomad.sheep.HeadlessBundle;
 import com.watabou.utils.Bundle;
 
 public enum HeroSubClass {
@@ -73,6 +74,19 @@ public enum HeroSubClass {
 	}
 	
 	public static HeroSubClass restoreInBundle( Bundle bundle ) {
+		String value = bundle.getString( SUBCLASS );
+		try {
+			return valueOf( value );
+		} catch (Exception e) {
+			return NONE;
+		}
+	}
+
+	public void storeInBundle( HeadlessBundle bundle ) {
+		bundle.put( SUBCLASS, toString() );
+	}
+
+	public static HeroSubClass restoreInBundle( HeadlessBundle bundle ) {
 		String value = bundle.getString( SUBCLASS );
 		try {
 			return valueOf( value );

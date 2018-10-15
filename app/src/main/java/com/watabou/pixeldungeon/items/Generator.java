@@ -17,6 +17,8 @@
  */
 package com.watabou.pixeldungeon.items;
 
+import android.util.Log;
+
 import java.util.HashMap;
 
 import com.watabou.pixeldungeon.Dungeon;
@@ -205,7 +207,6 @@ public class Generator {
 	
 	public static Item random( Category cat ) {
 		try {
-			
 			categoryProbs.put( cat, categoryProbs.get( cat ) / 2 );
 			
 			switch (cat) {
@@ -218,7 +219,7 @@ public class Generator {
 			}
 			
 		} catch (Exception e) {
-
+			e.printStackTrace();
 			return null;
 			
 		}

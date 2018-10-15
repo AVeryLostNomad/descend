@@ -23,6 +23,8 @@ import java.util.HashSet;
 
 import android.util.SparseArray;
 
+import com.averylostnomad.sheep.HeadlessBundlable;
+import com.averylostnomad.sheep.HeadlessBundle;
 import com.watabou.pixeldungeon.Dungeon;
 import com.watabou.pixeldungeon.Statistics;
 import com.watabou.pixeldungeon.actors.blobs.Blob;
@@ -32,7 +34,7 @@ import com.watabou.pixeldungeon.levels.Level;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 
-public abstract class Actor implements Bundlable {
+public abstract class Actor implements Bundlable, HeadlessBundlable {
 	
 	public static final float TICK	= 1f;
 
@@ -75,6 +77,18 @@ public abstract class Actor implements Bundlable {
 	
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
+		time = bundle.getFloat( TIME );
+		id = bundle.getInt( ID );
+	}
+
+	@Override
+	public void storeInBundle( HeadlessBundle bundle ) {
+		bundle.put( TIME, time );
+		bundle.put( ID, id );
+	}
+
+	@Override
+	public void restoreFromBundle( HeadlessBundle bundle ) {
 		time = bundle.getFloat( TIME );
 		id = bundle.getInt( ID );
 	}

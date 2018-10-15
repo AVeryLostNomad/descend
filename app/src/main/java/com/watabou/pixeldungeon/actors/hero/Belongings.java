@@ -19,6 +19,7 @@ package com.watabou.pixeldungeon.actors.hero;
 
 import java.util.Iterator;
 
+import com.averylostnomad.sheep.HeadlessBundle;
 import com.watabou.pixeldungeon.Badges;
 import com.watabou.pixeldungeon.Dungeon;
 import com.watabou.pixeldungeon.items.Item;
@@ -70,6 +71,16 @@ public class Belongings implements Iterable<Item> {
 		bundle.put( RING1, ring1 );
 		bundle.put( RING2, ring2 );
 	}
+
+	public void storeInBundle( HeadlessBundle bundle ) {
+
+		backpack.storeInBundle( bundle );
+
+		bundle.put( WEAPON, weapon );
+		bundle.put( ARMOR, armor );
+		bundle.put( RING1, ring1 );
+		bundle.put( RING2, ring2 );
+	}
 	
 	public void restoreFromBundle( Bundle bundle ) {
 		
@@ -88,6 +99,29 @@ public class Belongings implements Iterable<Item> {
 			ring1.activate( owner );
 		}
 		
+		ring2 = (Ring)bundle.get( RING2 );
+		if (ring2 != null) {
+			ring2.activate( owner );
+		}
+	}
+
+	public void restoreFromBundle( HeadlessBundle bundle ) {
+
+		backpack.clear();
+		backpack.restoreFromBundle( bundle );
+
+		weapon = (KindOfWeapon)bundle.get( WEAPON );
+		if (weapon != null) {
+			weapon.activate( owner );
+		}
+
+		armor = (Armor)bundle.get( ARMOR );
+
+		ring1 = (Ring)bundle.get( RING1 );
+		if (ring1 != null) {
+			ring1.activate( owner );
+		}
+
 		ring2 = (Ring)bundle.get( RING2 );
 		if (ring2 != null) {
 			ring2.activate( owner );

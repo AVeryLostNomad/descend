@@ -19,6 +19,8 @@ package com.watabou.pixeldungeon.plants;
 
 import java.util.ArrayList;
 
+import com.averylostnomad.sheep.HeadlessBundlable;
+import com.averylostnomad.sheep.HeadlessBundle;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.pixeldungeon.Assets;
 import com.watabou.pixeldungeon.Dungeon;
@@ -40,7 +42,7 @@ import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
-public class Plant implements Bundlable {
+public class Plant implements Bundlable, HeadlessBundlable {
 
 	public String plantName;
 	
@@ -85,6 +87,16 @@ public class Plant implements Bundlable {
 
 	@Override
 	public void storeInBundle( Bundle bundle ) {
+		bundle.put( POS, pos );
+	}
+
+	@Override
+	public void restoreFromBundle( HeadlessBundle bundle ) {
+		pos = bundle.getInt( POS );
+	}
+
+	@Override
+	public void storeInBundle( HeadlessBundle bundle ) {
 		bundle.put( POS, pos );
 	}
 	

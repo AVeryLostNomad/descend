@@ -62,7 +62,7 @@ public class LaboratoryPainter extends Painter {
 			} while (
 				level.map[pos] != Terrain.EMPTY_SP || 
 				level.heaps.get( pos ) != null);
-			if( !TestMain.ADMIN_MODE)level.drop( prize( level ), pos );
+			level.drop( prize( level ), pos );
 		}
 		
 		entrance.set( Room.Door.Type.LOCKED );

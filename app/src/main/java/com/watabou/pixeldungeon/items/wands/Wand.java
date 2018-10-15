@@ -19,6 +19,7 @@ package com.watabou.pixeldungeon.items.wands;
 
 import java.util.ArrayList;
 
+import com.averylostnomad.sheep.HeadlessBundle;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.pixeldungeon.Assets;
 import com.watabou.pixeldungeon.Badges;
@@ -398,6 +399,26 @@ public abstract class Wand extends KindOfWeapon {
 	
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
+		super.restoreFromBundle( bundle );
+		if ((usagesToKnow = bundle.getInt( UNFAMILIRIARITY )) == 0) {
+			usagesToKnow = USAGES_TO_KNOW;
+		}
+		maxCharges = bundle.getInt( MAX_CHARGES );
+		curCharges = bundle.getInt( CUR_CHARGES );
+		curChargeKnown = bundle.getBoolean( CUR_CHARGE_KNOWN );
+	}
+
+	@Override
+	public void storeInBundle( HeadlessBundle bundle ) {
+		super.storeInBundle( bundle );
+		bundle.put( UNFAMILIRIARITY, usagesToKnow );
+		bundle.put( MAX_CHARGES, maxCharges );
+		bundle.put( CUR_CHARGES, curCharges );
+		bundle.put( CUR_CHARGE_KNOWN, curChargeKnown );
+	}
+
+	@Override
+	public void restoreFromBundle( HeadlessBundle bundle ) {
 		super.restoreFromBundle( bundle );
 		if ((usagesToKnow = bundle.getInt( UNFAMILIRIARITY )) == 0) {
 			usagesToKnow = USAGES_TO_KNOW;

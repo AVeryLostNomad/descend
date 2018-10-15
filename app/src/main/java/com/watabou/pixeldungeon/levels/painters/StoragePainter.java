@@ -43,7 +43,7 @@ public class StoragePainter extends Painter {
 			do {
 				pos = room.random();
 			} while (level.map[pos] != floor);
-			if(!TestMain.ADMIN_MODE)level.drop( prize( level ), pos );
+			level.drop( prize( level ), pos );
 		}
 		
 		room.entrance().set( Room.Door.Type.BARRICADE );

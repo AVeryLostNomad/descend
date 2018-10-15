@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import com.averylostnomad.sheep.HeadlessBundlable;
+import com.averylostnomad.sheep.HeadlessBundle;
 import com.averylostnomad.sheep.TestMain;
 import com.watabou.noosa.Scene;
 import com.watabou.noosa.audio.Sample;
@@ -72,7 +74,7 @@ import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
-public abstract class Level implements Bundlable {
+public abstract class Level implements Bundlable, HeadlessBundlable {
 	
 	public static enum Feeling {
 		NONE,
@@ -217,6 +219,79 @@ public abstract class Level implements Bundlable {
 		}
 		createMobs();
 	}
+
+
+	@Override
+	public void restoreFromBundle( HeadlessBundle bundle ) {
+
+		mobs = new HashSet<Mob>();
+		heaps = new HashMap<Integer,Heap>();
+		blobs = new HashMap<Class<? extends Blob>, Blob>();
+		plants = new HashMap<Integer,Plant>();
+
+		map		= bundle.getIntArray( MAP );
+		visited	= bundle.getBooleanArray( VISITED );
+		mapped	= bundle.getBooleanArray( MAPPED );
+
+		entrance	= bundle.getInt( ENTRANCE );
+		exit		= bundle.getInt( EXIT );
+
+		weakFloorCreated = false;
+
+		adjustMapSize();
+
+		Collection<HeadlessBundlable> collection = bundle.getCollection( HEAPS );
+		for (HeadlessBundlable h : collection) {
+			Heap heap = (Heap)h;
+			if (resizingNeeded) {
+				heap.pos = adjustPos( heap.pos );
+			}
+			heaps.put( heap.pos, heap );
+		}
+
+		collection = bundle.getCollection( PLANTS );
+		for (HeadlessBundlable p : collection) {
+			Plant plant = (Plant)p;
+			if (resizingNeeded) {
+				plant.pos = adjustPos( plant.pos );
+			}
+			plants.put( plant.pos, plant );
+		}
+
+		collection = bundle.getCollection( MOBS );
+		for (HeadlessBundlable m : collection) {
+			Mob mob = (Mob)m;
+
+			if (mob != null) {
+				if (resizingNeeded) {
+					mob.pos = adjustPos( mob.pos );
+				}
+				mobs.add( mob );
+			}
+		}
+
+		collection = bundle.getCollection( BLOBS );
+		for (HeadlessBundlable b : collection) {
+			Blob blob = (Blob)b;
+			blobs.put( blob.getClass(), blob );
+		}
+
+		buildFlagMaps();
+		cleanWalls();
+	}
+
+	@Override
+	public void storeInBundle( HeadlessBundle bundle ) {
+		bundle.put( MAP, map );
+		bundle.put( VISITED, visited );
+		bundle.put( MAPPED, mapped );
+		bundle.put( ENTRANCE, entrance );
+		bundle.put( EXIT, exit );
+		bundle.put( HEAPS, heaps.values() );
+		bundle.put( PLANTS, plants.values() );
+		bundle.put( MOBS, mobs );
+		bundle.put( BLOBS, blobs.values() );
+	}
 	
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
@@ -258,6 +333,7 @@ public abstract class Level implements Bundlable {
 		collection = bundle.getCollection( MOBS );
 		for (Bundlable m : collection) {
 			Mob mob = (Mob)m;
+
 			if (mob != null) {
 				if (resizingNeeded) {
 					mob.pos = adjustPos( mob.pos );

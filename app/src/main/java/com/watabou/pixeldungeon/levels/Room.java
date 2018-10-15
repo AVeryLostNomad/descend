@@ -24,6 +24,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import com.averylostnomad.sheep.HeadlessBundlable;
+import com.averylostnomad.sheep.HeadlessBundle;
 import com.watabou.pixeldungeon.PixelDungeon;
 import com.watabou.pixeldungeon.levels.painters.*;
 import com.watabou.utils.Bundlable;
@@ -33,7 +35,7 @@ import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 import com.watabou.utils.Rect;
 
-public class Room extends Rect implements Graph.Node, Bundlable {
+public class Room extends Rect implements Graph.Node, Bundlable, HeadlessBundlable {
 	
 	public HashSet<Room> neigbours = new HashSet<Room>();
 	public HashMap<Room, Door> connected = new HashMap<Room, Door>();
@@ -78,12 +80,11 @@ public class Room extends Rect implements Graph.Node, Bundlable {
 			}
 		}
 		
-		public void paint( Level level, Room room ) {
+		public void paint( Level level, Room room ) throws Exception {
 			try {
 				paint.invoke( null, level, room );
 			} catch (Exception e) {
-				e.printStackTrace();
-				PixelDungeon.reportException( e );
+				throw e;
 			}
 		}
 	};
@@ -183,6 +184,24 @@ public class Room extends Rect implements Graph.Node, Bundlable {
 		top = bundle.getInt( "top" );
 		right = bundle.getInt( "right" );
 		bottom = bundle.getInt( "bottom" );		
+		type = Type.valueOf( bundle.getString( "type" ) );
+	}
+
+	@Override
+	public void storeInBundle( HeadlessBundle bundle ) {
+		bundle.put( "left", left );
+		bundle.put( "top", top );
+		bundle.put( "right", right );
+		bundle.put( "bottom", bottom );
+		bundle.put( "type", type.toString() );
+	}
+
+	@Override
+	public void restoreFromBundle( HeadlessBundle bundle ) {
+		left = bundle.getInt( "left" );
+		top = bundle.getInt( "top" );
+		right = bundle.getInt( "right" );
+		bottom = bundle.getInt( "bottom" );
 		type = Type.valueOf( bundle.getString( "type" ) );
 	}
 	

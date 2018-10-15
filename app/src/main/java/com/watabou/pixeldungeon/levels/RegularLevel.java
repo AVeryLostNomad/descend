@@ -18,10 +18,12 @@
 package com.watabou.pixeldungeon.levels;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import com.averylostnomad.sheep.GeneratorSpec;
+import com.averylostnomad.sheep.HeadlessBundle;
+import com.averylostnomad.sheep.TestMain;
 import com.watabou.pixeldungeon.Bones;
 import com.watabou.pixeldungeon.Dungeon;
 import com.watabou.pixeldungeon.actors.Actor;
@@ -116,7 +118,7 @@ public abstract class RegularLevel extends Level {
 			}
 		}
 		
-		if (Dungeon.shopOnLevel()) {
+		if (Dungeon.shopOnLevel() || GeneratorSpec.forceGenerateShop) {
 			Room shop = null;
 			for (Room r : roomEntrance.connected.keySet()) {
 				if (r.connected.size() == 1 && r.width() >= 5 && r.height() >= 5) {
@@ -133,12 +135,21 @@ public abstract class RegularLevel extends Level {
 		}
 		
 		specials = new ArrayList<Room.Type>( Room.SPECIALS );
-		if (Dungeon.bossLevel( Dungeon.depth + 1 )) {
+		if (Dungeon.bossLevel( Dungeon.depth + 1 ) || GeneratorSpec.forceBossLevel) {
 			specials.remove( Room.Type.WEAK_FLOOR );
 		}
+		if(TestMain.ADMIN_MODE) {
+            for (Room.Type type : GeneratorSpec.roomsMustNotcontain) {
+                specials.remove(type);
+            }
+        }
 		assignRoomType();
 		
-		paint();
+		try{
+		    paint();
+        }catch(Exception e){
+		    return false;
+        }
 		paintWater();
 		paintGrass();
 		
@@ -168,7 +179,10 @@ public abstract class RegularLevel extends Level {
 	protected void assignRoomType() {
 		
 		int specialRooms = 0;
-		
+
+		List<Room.Type> alreadyAdded = new ArrayList<Room.Type>();
+		List<Room.Type> mustContain = new ArrayList<>(GeneratorSpec.roomsMustcontain);
+
 		for (Room r : rooms) {
 			if (r.type == Type.NULL && 
 				r.connected.size() == 1) {
@@ -180,6 +194,7 @@ public abstract class RegularLevel extends Level {
 					if (pitRoomNeeded) {
 
 						r.type = Type.PIT;
+						alreadyAdded.add(Type.PIT);
 						pitRoomNeeded = false;
 
 						specials.remove( Type.ARMORY );
@@ -194,11 +209,13 @@ public abstract class RegularLevel extends Level {
 					} else if (Dungeon.depth % 5 == 2 && specials.contains( Type.LABORATORY )) {
 						
 						r.type = Type.LABORATORY;
+						alreadyAdded.add(Type.LABORATORY);
 						
 					} else {
 						
 						int n = specials.size();
 						r.type = specials.get( Math.min( Random.Int( n ), Random.Int( n ) ) );
+						alreadyAdded.add(r.type);
 						if (r.type == Type.WEAK_FLOOR) {
 							weakFloorCreated = true;
 						}
@@ -226,21 +243,64 @@ public abstract class RegularLevel extends Level {
 				}
 			}
 		}
-		
+
+		// Remove all the types we've already put in by random chance
+		for(Room.Type type : alreadyAdded){
+		    if(mustContain.contains(type)) mustContain.remove(type);
+        }
+
+		// First we're going to try to use up the remaining needed types without overwriting other ones
+        boolean stillHasRoomsNonNull = true;
+        while(mustContain.size() != 0 && stillHasRoomsNonNull) {
+            boolean atLeastOneNonNull = false;
+            for (Room r : rooms) {
+                if (r.type == Type.NULL) {
+                    atLeastOneNonNull = true;
+
+                    r.type = mustContain.remove(0);
+                    Room.useType( r.type );
+                    specialRooms++;
+                }
+                if(mustContain.size() == 0) break;
+            }
+            if(!atLeastOneNonNull) stillHasRoomsNonNull = false;
+        }
+
+        // Only force the defined rooms if we are in generation mode
+        if(TestMain.ADMIN_MODE) {
+            List<Room.Type> typesWeWant = new ArrayList<Room.Type>(GeneratorSpec.roomsMustcontain);
+            // If we're still at this point, then we need to overwrite other randomly-generate types
+            while (mustContain.size() != 0) {
+                boolean atLeastOneNonNeeded = false;
+                for (Room r : rooms) {
+                    if (!typesWeWant.contains(r.type)) {
+                        atLeastOneNonNeeded = true;
+                        r.type = mustContain.remove(0);
+                        Room.useType(r.type);
+                        specialRooms++;
+                    }
+                    if (mustContain.size() == 0) break;
+                }
+                if (!atLeastOneNonNeeded) break; // There are no more available rooms.
+            }
+        }
+
 		int count = 0;
 		for (Room r : rooms) {
 			if (r.type == Type.NULL) {
 				int connections = r.connected.size();
 				if (connections == 0) {
-					
+
 				} else if (Random.Int( connections * connections ) == 0) {
 					r.type = Type.STANDARD;
 					count++;
 				} else {
-					r.type = Type.TUNNEL; 
+					r.type = Type.TUNNEL;
 				}
 			}
 		}
+
+
 		
 		while (count < 4) {
 			Room r = randomRoom( Type.TUNNEL, 1 );
@@ -381,12 +441,16 @@ public abstract class RegularLevel extends Level {
 		}
 	}
 	
-	protected void paint() {
+	protected void paint() throws Exception {
 		
 		for (Room r : rooms) {
 			if (r.type != Type.NULL) {
 				placeDoors( r );
-				r.type.paint( this, r );
+				try{
+				    r.type.paint( this, r );
+                }catch(Exception e){
+				    throw e;
+                }
 			} else {
 				if (feeling == Feeling.CHASM && Random.Int( 2 ) == 0) {
 					Painter.fill( this, r, Terrain.WALL );
@@ -674,6 +738,12 @@ public abstract class RegularLevel extends Level {
 		super.storeInBundle( bundle );
 		bundle.put( "rooms", rooms );
 	}
+
+	@Override
+	public void storeInBundle( HeadlessBundle bundle ) {
+		super.storeInBundle( bundle );
+		bundle.put( "rooms", rooms );
+	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -681,6 +751,20 @@ public abstract class RegularLevel extends Level {
 		super.restoreFromBundle( bundle );
 		
 		rooms = new HashSet<Room>(BundleUtils.Companion.<Room>castInto(bundle.getCollection( "rooms" )));
+		for (Room r : rooms) {
+			if (r.type == Type.WEAK_FLOOR) {
+				weakFloorCreated = true;
+				break;
+			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void restoreFromBundle( HeadlessBundle bundle ) {
+		super.restoreFromBundle( bundle );
+
+		rooms = new HashSet<Room>(BundleUtils.Companion.<Room>castIntoHeadless(bundle.getCollection( "rooms" )));
 		for (Room r : rooms) {
 			if (r.type == Type.WEAK_FLOOR) {
 				weakFloorCreated = true;

@@ -46,6 +46,7 @@ public class GamesInProgress {
 
 			} catch (Exception e) {
 				info = null;
+				e.printStackTrace();
 			}
 			
 			state.put( NewStartScene.Companion.getSaveIndex(), info );

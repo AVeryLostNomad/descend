@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import com.averylostnomad.sheep.HeadlessBundle;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
@@ -68,12 +69,32 @@ public class ItemStatusHandler<T extends Item> {
 		
 		restore( bundle, labels, images );
 	}
+
+	public ItemStatusHandler( Class<? extends T>[] items, String[] labels, Integer[] images, HeadlessBundle bundle ) {
+
+		this.items = items;
+
+		this.images = new HashMap<Class<? extends T>, Integer>();
+		this.labels = new HashMap<Class<? extends T>, String>();
+		known = new HashSet<Class<? extends T>>();
+
+		restore( bundle, labels, images );
+	}
 	
 	private static final String PFX_IMAGE	= "_image";
 	private static final String PFX_LABEL	= "_label";
 	private static final String PFX_KNOWN	= "_known";
 	
 	public void save( Bundle bundle ) {
+		for (int i=0; i < items.length; i++) {
+			String itemName = items[i].toString();
+			bundle.put( itemName + PFX_IMAGE, images.get( items[i] ) );
+			bundle.put( itemName + PFX_LABEL, labels.get( items[i] ) );
+			bundle.put( itemName + PFX_KNOWN, known.contains( items[i] ) );
+		}
+	}
+
+	public void save( HeadlessBundle bundle ) {
 		for (int i=0; i < items.length; i++) {
 			String itemName = items[i].toString();
 			bundle.put( itemName + PFX_IMAGE, images.get( items[i] ) );
@@ -116,6 +137,44 @@ public class ItemStatusHandler<T extends Item> {
 				images.put( item, imagesLeft.get( index ) );
 				imagesLeft.remove( index );
 				
+			}
+		}
+	}
+
+	private void restore( HeadlessBundle bundle, String[] allLabels, Integer[] allImages ) {
+
+		ArrayList<String> labelsLeft = new ArrayList<String>( Arrays.asList( allLabels ) );
+		ArrayList<Integer> imagesLeft = new ArrayList<Integer>( Arrays.asList( allImages ) );
+
+		for (int i=0; i < items.length; i++) {
+
+			Class<? extends T> item = (Class<? extends T>)(items[i]);
+			String itemName = item.toString();
+
+			if (bundle.contains( itemName + PFX_LABEL )) {
+
+				String label = bundle.getString( itemName + PFX_LABEL );
+				labels.put( item, label );
+				labelsLeft.remove( label );
+
+				Integer image = bundle.getInt( itemName + PFX_IMAGE );
+				images.put( item, image );
+				imagesLeft.remove( image );
+
+				if (bundle.getBoolean( itemName + PFX_KNOWN )) {
+					known.add( item );
+				}
+
+			} else {
+
+				int index = Random.Int( labelsLeft.size() );
+
+				labels.put( item, labelsLeft.get( index ) );
+				labelsLeft.remove( index );
+
+				images.put( item, imagesLeft.get( index ) );
+				imagesLeft.remove( index );
+
 			}
 		}
 	}

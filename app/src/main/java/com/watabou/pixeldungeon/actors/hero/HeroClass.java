@@ -17,6 +17,7 @@
  */
 package com.watabou.pixeldungeon.actors.hero;
 
+import com.averylostnomad.sheep.HeadlessBundle;
 import com.watabou.pixeldungeon.Assets;
 import com.watabou.pixeldungeon.Badges;
 import com.watabou.pixeldungeon.items.TomeOfMastery;
@@ -27,6 +28,7 @@ import com.watabou.pixeldungeon.items.potions.PotionOfStrength;
 import com.watabou.pixeldungeon.items.rings.RingOfShadows;
 import com.watabou.pixeldungeon.items.scrolls.ScrollOfIdentify;
 import com.watabou.pixeldungeon.items.scrolls.ScrollOfMagicMapping;
+import com.watabou.pixeldungeon.items.summon.SummonItem;
 import com.watabou.pixeldungeon.items.wands.WandOfMagicMissile;
 import com.watabou.pixeldungeon.items.weapon.melee.Dagger;
 import com.watabou.pixeldungeon.items.weapon.melee.Knuckles;
@@ -114,6 +116,7 @@ public enum HeroClass {
 		(hero.belongings.armor = new ClothArmor()).identify();
 		new Food().identify().collect();
 		new Keyring().collect();
+		new SummonItem().collect();
 	}
 	
 	public Badges.Badge masteryBadge() {
@@ -218,6 +221,15 @@ public enum HeroClass {
 	}
 	
 	public static HeroClass restoreInBundle( Bundle bundle ) {
+		String value = bundle.getString( CLASS );
+		return value.length() > 0 ? valueOf( value ) : ROGUE;
+	}
+
+	public void storeInBundle( HeadlessBundle bundle ) {
+		bundle.put( CLASS, toString() );
+	}
+
+	public static HeroClass restoreInBundle( HeadlessBundle bundle ) {
 		String value = bundle.getString( CLASS );
 		return value.length() > 0 ? valueOf( value ) : ROGUE;
 	}

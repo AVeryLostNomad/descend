@@ -58,9 +58,7 @@ public class ArmoryPainter extends Painter {
 			do {
 				pos = room.random();
 			} while (level.map[pos] != Terrain.EMPTY || level.heaps.get( pos ) != null);
-			if(!TestMain.ADMIN_MODE){
-				level.drop( prize( level ), pos );
-			}
+			level.drop( prize( level ), pos );
 		}
 		
 		entrance.set( Room.Door.Type.LOCKED );

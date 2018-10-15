@@ -116,7 +116,11 @@ public class LastShopLevel extends RegularLevel {
 			roomShop.type = Imp.Quest.isCompleted() ? Room.Type.SHOP : Room.Type.STANDARD;
 		}
 		
-		paint();
+		try{
+			paint();
+		}catch(Exception e){
+			return false;
+		}
 		
 		paintWater();
 		paintGrass();

@@ -22,6 +22,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
+import com.averylostnomad.sheep.HeadlessBundlable;
+import com.averylostnomad.sheep.HeadlessBundle;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.tweeners.AlphaTweener;
 import com.watabou.pixeldungeon.Assets;
@@ -52,7 +54,7 @@ import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
-public class Heap implements Bundlable {
+public class Heap implements Bundlable, HeadlessBundlable {
 
 	private static final String TXT_MIMIC = "This is a mimic!";
 	
@@ -366,7 +368,7 @@ public class Heap implements Bundlable {
 	private static final String POS		= "pos";
 	private static final String TYPE	= "type";
 	private static final String ITEMS	= "items";
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
@@ -382,6 +384,26 @@ public class Heap implements Bundlable {
 
 	@Override
 	public void storeInBundle( Bundle bundle ) {
+		bundle.put( POS, pos );
+		bundle.put( TYPE, type.toString() );
+		bundle.put( ITEMS, items );
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void restoreFromBundle( HeadlessBundle bundle ) {
+		pos = bundle.getInt( POS );
+		type = Type.valueOf( bundle.getString( TYPE ) );
+		Collection<HeadlessBundlable> result = bundle.getCollection(ITEMS);
+		LinkedList<Item> itm = new LinkedList<Item>();
+		for(HeadlessBundlable b : result){
+			itm.add((Item) b);
+		}
+		items = itm;
+	}
+
+	@Override
+	public void storeInBundle( HeadlessBundle bundle ) {
 		bundle.put( POS, pos );
 		bundle.put( TYPE, type.toString() );
 		bundle.put( ITEMS, items );

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 
+import com.averylostnomad.sheep.HeadlessBundle;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
@@ -206,6 +207,24 @@ public class Hero extends Char {
 		
 		belongings.storeInBundle( bundle );
 	}
+
+	@Override
+	public void storeInBundle( HeadlessBundle bundle ) {
+		super.storeInBundle( bundle );
+
+		heroClass.storeInBundle( bundle );
+		subClass.storeInBundle( bundle );
+
+		bundle.put( ATTACK, attackSkill );
+		bundle.put( DEFENSE, defenseSkill );
+
+		bundle.put( STRENGTH, STR );
+
+		bundle.put( LEVEL, lvl );
+		bundle.put( EXPERIENCE, exp );
+
+		belongings.storeInBundle( bundle );
+	}
 	
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
@@ -223,6 +242,25 @@ public class Hero extends Char {
 		lvl = bundle.getInt( LEVEL );
 		exp = bundle.getInt( EXPERIENCE );
 		
+		belongings.restoreFromBundle( bundle );
+	}
+
+	@Override
+	public void restoreFromBundle( HeadlessBundle bundle ) {
+		super.restoreFromBundle( bundle );
+
+		heroClass = HeroClass.restoreInBundle( bundle );
+		subClass = HeroSubClass.restoreInBundle( bundle );
+
+		attackSkill = bundle.getInt( ATTACK );
+		defenseSkill = bundle.getInt( DEFENSE );
+
+		STR = bundle.getInt( STRENGTH );
+		updateAwareness();
+
+		lvl = bundle.getInt( LEVEL );
+		exp = bundle.getInt( EXPERIENCE );
+
 		belongings.restoreFromBundle( bundle );
 	}
 	
